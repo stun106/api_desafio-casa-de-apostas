@@ -1,0 +1,30 @@
+# Ignorar pasta de build do Maven
+target/
+
+# Ignorar configs e dependências locais
+.idea/
+.vscode/
+*.iml
+
+# Ignorar controle de versão
+.git
+.gitignore
+
+# Ignorar arquivos temporários
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+
+# Ignorar arquivos de container
+docker-compose.override.yml
+Dockerfile.*
+
+# Ignorar arquivos de sistema do Windows
+*.bat
+*.cmd
+
+# Ignorar cache e configs locais
+.mvn/wrapper/maven-wrapper.jar
+mvnw.cmd
