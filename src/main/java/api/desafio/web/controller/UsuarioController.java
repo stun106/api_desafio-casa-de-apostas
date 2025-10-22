@@ -3,6 +3,7 @@ package api.desafio.web.controller;
 import api.desafio.model.Autorizacao;
 import api.desafio.model.Usuario;
 import api.desafio.service.UsuarioService;
+import api.desafio.web.dto.SimplesUsuarioDto;
 import api.desafio.web.dto.UserNovaCredentialDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,9 +19,9 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<Usuario> create (@RequestBody Usuario novoUsuario) {
-        usuarioService.criandoUsuario(novoUsuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
+    @ResponseStatus(HttpStatus.CREATED)
+    public SimplesUsuarioDto create (@RequestBody Usuario novoUsuario) {
+        return usuarioService.criandoUsuario(novoUsuario);
     }
 
     @GetMapping()

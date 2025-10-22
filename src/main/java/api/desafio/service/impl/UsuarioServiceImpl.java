@@ -6,7 +6,9 @@ import api.desafio.repository.UsuarioReprository;
 import api.desafio.service.UsuarioService;
 import api.desafio.service.exception.EntityNotfoundException;
 import api.desafio.service.exception.UniqueViolationExeception;
+import api.desafio.web.dto.SimplesUsuarioDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,7 +30,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public void criandoUsuario(Usuario usuario) {
+    public SimplesUsuarioDto criandoUsuario(Usuario usuario) {
 
         Usuario usuarioExiste = usuarioReprository.findByNome(usuario.getNome());
         if (usuarioExiste != null) {
@@ -38,7 +40,10 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setSenha(passwordEncode(usuario.getSenha()));
         usuario.setRole(Autorizacao.USER);
 
-        usuarioReprository.save(usuario);
+        Usuario user = usuarioReprository.save(usuario);
+        SimplesUsuarioDto simplesUsuarioDto = new SimplesUsuarioDto();
+        BeanUtils.copyProperties(user, simplesUsuarioDto, "senha", "role", "criadoEm");
+        return simplesUsuarioDto;
     }
 
     @Override

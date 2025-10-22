@@ -2,12 +2,13 @@ package api.desafio.service;
 
 import api.desafio.model.Autorizacao;
 import api.desafio.model.Usuario;
+import api.desafio.web.dto.SimplesUsuarioDto;
 
 import java.util.UUID;
 
 
 public interface UsuarioService {
-    void criandoUsuario (Usuario usuario);
+    SimplesUsuarioDto criandoUsuario (Usuario usuario);
 
     Usuario buscarUsuarioPorEmail(String email);
 

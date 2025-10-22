@@ -22,39 +22,55 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtUserDetailsService jwtUserDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
-    final String token = request.getHeader(JwtUtils.JWT_AUTHORIZATION);
+        final String authorizationHeader = request.getHeader(JwtUtils.JWT_AUTHORIZATION);
 
-    if (token == null || !token.startsWith(JwtUtils.JWT_BEARER)) {
-        log.info("Jwt nulo, Vazio ou não iniciado como bearer...");
-        filterChain.doFilter(request,response);
-        throw new ForbiddenExeceptionHandle( "Jwt nulo, Vazio ou não iniciado como bearer..." );
+        try {
+
+            if (authorizationHeader == null || !authorizationHeader.startsWith(JwtUtils.JWT_BEARER)) {
+                log.debug("Requisição sem JWT ou header malformado. Prosseguindo sem autenticação.");
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            final String token = authorizationHeader.substring(JwtUtils.JWT_BEARER.length()).trim();
+
+            if (!JwtUtils.isTokenValid(token)) {
+                log.warn("Tentativa de acesso com token inválido ou expirado.");
+                throw new ForbiddenExeceptionHandle("Token inválido ou expirado.");
+            }
+
+            final String userEmail = JwtUtils.getUserEmailFromToken(token);
+
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                authenticateUser(request, userEmail);
+            }
+
+            filterChain.doFilter(request, response);
+
+        } catch (ForbiddenExeceptionHandle ex) {
+            log.error("Erro de autorização JWT: {}", ex.getMessage());
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, ex.getMessage());
+        } catch (Exception ex) {
+            log.error("Erro inesperado durante a validação do JWT.", ex);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Erro interno no processamento do token JWT.");
+        }
     }
 
-    if (!JwtUtils.isTokenValid(token)) {
-        log.info("Token inválido ou expirado...");
-        filterChain.doFilter(request,response);
-        throw new ForbiddenExeceptionHandle( "token inválido ou expirado..." );
-    }
-
-    String userEmail = JwtUtils.getUserEmailFromToken(token);
-
-    toAuthenticate(request, userEmail);
-
-    filterChain.doFilter(request,response);
-
-    }
-
-    private void toAuthenticate(HttpServletRequest request, String username) {
+    private void authenticateUser(HttpServletRequest request, String username) {
         UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(username);
 
         UsernamePasswordAuthenticationToken authenticationToken =
-                UsernamePasswordAuthenticationToken
-                        .authenticated(userDetails, null, userDetails.getAuthorities());
+                new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
 
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        log.debug("Usuário autenticado via JWT: {}", username);
     }
 }
