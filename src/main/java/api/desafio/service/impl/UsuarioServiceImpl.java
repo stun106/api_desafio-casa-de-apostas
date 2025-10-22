@@ -10,6 +10,8 @@ import api.desafio.web.dto.SimplesUsuarioDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +44,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         Usuario user = usuarioReprository.save(usuario);
         SimplesUsuarioDto simplesUsuarioDto = new SimplesUsuarioDto();
-        BeanUtils.copyProperties(user, simplesUsuarioDto, "senha", "role", "criadoEm");
+        BeanUtils.copyProperties(user, simplesUsuarioDto, "senha", "criadoEm");
         return simplesUsuarioDto;
     }
 
@@ -52,10 +54,21 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioReprository.findUsuarioByEmail(email)
                 .orElseThrow(() -> new EntityNotfoundException("Usuario não encontrado"));
     }
+
     @Override
     @Transactional(readOnly = true)
     public Autorizacao buscarRoleByEmail(String email) {
         return usuarioReprository.buscarRolePorEmail(email);
+    }
+
+    @Override
+    public SimplesUsuarioDto usuarioLogado() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Usuario usuario = buscarUsuarioPorEmail(email);
+        SimplesUsuarioDto simplesUsuarioDto = new SimplesUsuarioDto();
+        BeanUtils.copyProperties(usuario, simplesUsuarioDto, "senha", "criadoEm");
+        return simplesUsuarioDto;
     }
 
 //    @Override

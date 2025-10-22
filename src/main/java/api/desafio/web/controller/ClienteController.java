@@ -50,6 +50,4 @@ public class ClienteController {
     public void deleteEmail(@PathVariable UUID idEmail) {
         clienteService.excluirEmail(idEmail);
     }
-
-
 }

@@ -24,6 +24,12 @@ public class UsuarioController {
         return usuarioService.criandoUsuario(novoUsuario);
     }
 
+    @GetMapping("/usuarioLogado")
+    @ResponseStatus(HttpStatus.OK)
+    public SimplesUsuarioDto usuarioLogado() {
+        return usuarioService.usuarioLogado();
+    }
+
     @GetMapping()
     public Usuario buscarUsuarioPorEmail(@RequestParam("email") String email) {
         return usuarioService.buscarUsuarioPorEmail(email);

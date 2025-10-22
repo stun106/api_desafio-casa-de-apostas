@@ -14,5 +14,7 @@ public interface UsuarioService {
 
     Autorizacao buscarRoleByEmail(String email);
 
+    SimplesUsuarioDto usuarioLogado();
+
     //Usuario alterarSenha (UUID idUsuario, String senhaAtual, String novaSenha, String ConfirmaSenha);
 }
