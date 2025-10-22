@@ -17,7 +17,7 @@ import java.util.UUID;
 public class Email {
     @Id
     @GeneratedValue(generator = "UUID")
-    private UUID idemail;
+    private UUID idEmail;
 
     private String email;
 
