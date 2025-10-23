@@ -99,5 +99,11 @@ public class ClienteServiceImpl implements ClienteService {
         emailRepository.deleteById(idEmail);
     }
 
+    @Override
+    public void deletarCliente(UUID idCliente) {
+        Cliente cliente = clienteRepository.findById(idCliente)
+                .orElseThrow(() -> new EntityNotfoundException("Cliente não encontrado"));
 
+        clienteRepository.delete(cliente);
+    }
 }

@@ -12,4 +12,5 @@ public interface ClienteService {
     List<Cliente> listarClientes();
     void excluirTelefone(UUID idTelefone);
     void excluirEmail(UUID idEmail);
+    void deletarCliente(UUID idCliente);
 }

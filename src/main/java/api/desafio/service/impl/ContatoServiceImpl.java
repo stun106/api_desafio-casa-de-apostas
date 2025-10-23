@@ -15,6 +15,11 @@ public class ContatoServiceImpl implements ContatoService {
         List<Telefone> telefonesAtuais = contatoExistente.getTelefones();
         List<Telefone> telefonesNovos = contatoNovo.getTelefones();
 
+        telefonesAtuais.removeIf(tAntigo ->
+                telefonesNovos.stream()
+                        .noneMatch(tNovo -> tNovo.getIdTelefone() != null && tNovo.getIdTelefone().equals(tAntigo.getIdTelefone()))
+        );
+
         for (Telefone novo : telefonesNovos) {
             if (novo.getIdTelefone() != null) {
                 telefonesAtuais.stream()
@@ -22,7 +27,9 @@ public class ContatoServiceImpl implements ContatoService {
                         .findFirst()
                         .ifPresentOrElse(
                                 existente -> {
-                                    existente.setContato(novo.getContato());
+                                    existente.setNumero(novo.getNumero());
+                                    // mantém o mesmo contato
+                                    existente.setContato(contatoExistente);
                                 },
                                 () -> {
                                     novo.setContato(contatoExistente);
@@ -45,7 +52,6 @@ public class ContatoServiceImpl implements ContatoService {
                 emailsNovos.stream().noneMatch(e -> e.getIdEmail() != null && e.getIdEmail().equals(emailAntigo.getIdEmail()))
         );
 
-        // Atualiza ou adiciona novos
         for (Email novo : emailsNovos) {
             if (novo.getIdEmail() != null) {
                 emailsAtuais.stream()

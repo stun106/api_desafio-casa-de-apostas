@@ -39,6 +39,12 @@ public class ClienteController {
         return clienteService.listarClientes();
     }
 
+    @DeleteMapping("{idCliente}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID idCliente) {
+        clienteService.deletarCliente(idCliente);
+    }
+
     @DeleteMapping("/excluirTelefone/{idTelefone}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTelefone(@PathVariable UUID idTelefone) {
