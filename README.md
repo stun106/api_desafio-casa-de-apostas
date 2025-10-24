@@ -50,7 +50,7 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 
 ```bash
 # Clonar o repositório
-git https://github.com/stun106/api_desafio-casa-de-apostas.git
+git clone https://github.com/stun106/api_desafio-casa-de-apostas.git
 
 # Acessar o diretório do backend
 cd api_desafio-casa-de-apostas
